@@ -185,7 +185,7 @@
 <body>
 
 <div class="acciones">
-  <button onclick="enviarMail()">✉ Enviar por correo</button>
+  
   <button class="secundario" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
   <button class="secundario" onclick="if(confirm('¿Borrar todos los datos del formulario?'))document.querySelectorAll('input[type=text],textarea').forEach(e=>{if(e.id!=='destinatario')e.value=''});document.querySelectorAll('.cb').forEach(c=>c.classList.remove('marcado'))">🗑 Limpiar</button>
 </div>
