@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Etiquetas</title>
+<style>
+  :root{
+    --azul:#1a4f8b;
+    --azul-claro:#eaf1f8;
+    --gris:#f5f6f8;
+    --borde:#c9d3de;
+    --texto:#222;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:#e8ebee;
+    margin:0;
+    padding:20px;
+    color:var(--texto);
+  }
+  .hoja{
+    max-width:900px;
+    margin:0 auto;
+    background:#fff;
+    padding:40px 50px;
+    box-shadow:0 2px 12px rgba(0,0,0,.15);
+    border-top:8px solid var(--azul);
+  }
+  h1{
+    text-align:center;
+    color:var(--azul);
+    font-size:26px;
+    letter-spacing:1px;
+    margin:0 0 4px;
+    text-transform:uppercase;
+  }
+  .subtitulo{
+    text-align:center;
+    color:#555;
+    font-size:14px;
+    margin-bottom:24px;
+  }
+  h2{
+    background:var(--azul);
+    color:#fff;
+    font-size:14px;
+    padding:7px 12px;
+    margin:28px 0 0;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:6px;
+  }
+  th,td{
+    border:1px solid var(--borde);
+    padding:8px 10px;
+    text-align:left;
+    vertical-align:middle;
+    font-size:14px;
+  }
+  th{
+    background:var(--azul-claro);
+    width:34%;
+    font-weight:600;
+    color:#2c3e50;
+  }
+  input[type=text], textarea{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--texto);
+    outline:none;
+    padding:2px 0;
+  }
+  input[type=text]:focus, textarea:focus{
+    background:#fdf9e3;
+  }
+  textarea{
+    resize:vertical;
+    min-height:60px;
+    border:1px dashed var(--borde);
+    padding:8px;
+    background:#fff;
+  }
+  .checkboxes{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 28px;
+    padding:14px 12px;
+    border:1px solid var(--borde);
+    border-top:none;
+    margin-bottom:6px;
+    font-size:14px;
+  }
+  .checkboxes label{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    cursor:pointer;
+  }
+  .cb{
+    width:18px;height:18px;
+    border:2px solid var(--azul);
+    display:inline-block;
+    text-align:center;
+    line-height:15px;
+    font-size:15px;
+    font-weight:bold;
+    color:var(--azul);
+    cursor:pointer;
+    user-select:none;
+    flex-shrink:0;
+  }
+  .cb.marcado::after{content:"X";}
+  input[type=checkbox]{display:none;}
+  .linea{
+    border:none;
+    border-bottom:1px dotted #888;
+    width:100%;
+    background:transparent;
+    font-family:inherit;
+    font-size:14px;
+    padding:4px 2px;
+    outline:none;
+  }
+  .linea:focus{background:#fdf9e3;}
+  .bloque-citas{padding:10px 12px;border:1px solid var(--borde);border-top:none;margin-bottom:6px;}
+  .bloque-citas .linea{margin-bottom:14px;}
+  .bloque-citas .linea:last-child{margin-bottom:2px;}
+  .nota{
+    font-size:13px;
+    color:#555;
+    font-style:italic;
+    margin:10px 0 4px;
+  }
+  .firmas{
+    display:flex;
+    flex-wrap:wrap;
+    gap:30px;
+    margin-top:34px;
+    font-size:14px;
+  }
+  .firmas div{flex:1;min-width:220px;}
+  .firmas span{display:block;margin-bottom:2px;font-weight:600;color:#2c3e50;}
+  .acciones{
+    max-width:900px;
+    margin:0 auto 18px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .acciones button{
+    background:var(--azul);
+    color:#fff;
+    border:none;
+    padding:10px 22px;
+    font-size:14px;
+    border-radius:5px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .acciones button:hover{background:#123a67;}
+  .acciones button.secundario{background:#6b7a8d;}
+  .acciones button.secundario:hover{background:#4d5a68;}
+  .aviso-mail{
+    max-width:900px;margin:0 auto 14px;text-align:center;font-size:13px;color:#555;
+  }
+  .aviso-mail input{width:320px;padding:6px;border:1px solid var(--borde);border-radius:4px;font-family:inherit;}
+  @media print{
+    body{background:#fff;padding:0;}
+    .hoja{box-shadow:none;padding:10mm 12mm;max-width:100%;}
+    .acciones,.aviso-mail{display:none;}
+    input,textarea{background:transparent !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="acciones">
+  <button onclick="enviarMail()">✉ Enviar por correo</button>
+  <button class="secundario" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+  <button class="secundario" onclick="if(confirm('¿Borrar todos los datos del formulario?'))document.querySelectorAll('input[type=text],textarea').forEach(e=>{if(e.id!=='destinatario')e.value=''});document.querySelectorAll('.cb').forEach(c=>c.classList.remove('marcado'))">🗑 Limpiar</button>
+</div>
+<div class="aviso-mail">
+  Correo del destinatario (opcional): <input type="text" id="destinatario" placeholder="ej: pedidos@empresa.com">
+</div>
+
+<div class="hoja">
+
+  <h1>Solicitud de Etiquetas</h1>
+  <p class="subtitulo">Solicitud de desarrollo / modificación de etiquetas</p>
+
+  <table>
+    <tr><th>N° de solicitud</th><td><input type="text" id="n_solicitud"></td></tr>
+    <tr><th>Fecha</th><td><input type="text" id="fecha"></td></tr>
+    <tr><th>Solicitado por</th><td><input type="text" id="solicitado_por"></td></tr>
+  </table>
+
+  <h2>Tipo de solicitud <small style="font-weight:normal">(marcar con X)</small></h2>
+  <div class="checkboxes">
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Desarrollo nuevo</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Modificación</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Adaptación</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Reimpresión</label>
+  </div>
+
+  <h2>1. Datos del cliente</h2>
+  <table>
+    <tr><th>Cliente</th><td><input type="text" id="cliente"></td></tr>
+    <tr><th>Contacto</th><td><input type="text" id="contacto"></td></tr>
+    <tr><th>Producto</th><td><input type="text" id="producto"></td></tr>
+    <tr><th>Nombre de etiqueta</th><td><input type="text" id="nombre_etiqueta"></td></tr>
+    <tr><th>Código interno (si existe)</th><td><input type="text" id="codigo_interno"></td></tr>
+  </table>
+
+  <h2>2. Características de la etiqueta</h2>
+  <table>
+    <tr><th>Medidas</th><td><input type="text" id="medidas"></td></tr>
+    <tr><th>Material</th><td><input type="text" id="material"></td></tr>
+    <tr><th>Adhesivo</th><td><input type="text" id="adhesivo"></td></tr>
+    <tr><th>Terminación</th><td><input type="text" id="terminacion"></td></tr>
+    <tr><th>Troquel</th><td><input type="text" id="troquel"></td></tr>
+    <tr><th>Aplicación</th><td><input type="text" id="aplicacion"></td></tr>
+  </table>
+
+  <h2>3. Requerimientos gráficos</h2>
+  <table>
+    <tr><th>Cantidad de tintas (si está definida)</th><td><input type="text" id="tintas"></td></tr>
+    <tr><th>Colores especiales</th><td><input type="text" id="colores"></td></tr>
+    <tr><th>Textos</th><td><input type="text" id="textos"></td></tr>
+    <tr><th>Logotipos</th><td><input type="text" id="logotipos"></td></tr>
+    <tr><th>Código de barras / QR</th><td><input type="text" id="codigo_barras"></td></tr>
+    <tr><th>Información legal</th><td><input type="text" id="info_legal"></td></tr>
+    <tr><th>Observaciones de diseño</th><td><input type="text" id="obs_diseno"></td></tr>
+  </table>
+
+  <h2>4. Información de impresión y producción</h2>
+  <table>
+    <tr><th>Cantidad de etiquetas por rollo</th><td><input type="text" id="cant_rollo"></td></tr>
+    <tr><th>Buje</th><td><input type="text" id="buje"></td></tr>
+    <tr><th>Sentido de rebobinado</th><td><input type="text" id="rebobinado"></td></tr>
+    <tr><th>Otros requerimientos</th><td><input type="text" id="otros_requerimientos"></td></tr>
+  </table>
+
+  <h2>5. Detalle de la solicitud</h2>
+
+  <p class="nota">Para desarrollo nuevo — describir qué producto se necesita desarrollar, qué características debe tener y adjuntar las referencias disponibles:</p>
+  <div class="bloque-citas">
+    <textarea id="detalle_desarrollo" rows="4" placeholder="Describa aquí el desarrollo nuevo..."></textarea>
+  </div>
+
+  <p class="nota">Para modificación:</p>
+  <table>
+    <tr><th>Código del trabajo existente</th><td><input type="text" id="cod_existente"></td></tr>
+    <tr><th>Versión actual</th><td><input type="text" id="version_actual"></td></tr>
+    <tr><th>Cambios solicitados</th><td><input type="text" id="cambios"></td></tr>
+    <tr><th>Elementos que deben mantenerse</th><td><input type="text" id="mantener"></td></tr>
+    <tr><th>Elementos que deben eliminarse</th><td><input type="text" id="eliminar"></td></tr>
+  </table>
+
+  <h2>6. Plazos y prioridad</h2>
+  <table>
+    <tr>
+      <th>Prioridad</th>
+      <td>
+        <label style="display:inline-flex;align-items:center;gap:6px;margin-right:24px;cursor:pointer;"><span class="cb" onclick="this.classList.toggle('marcado')"></span> Normal</label>
+        <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><span class="cb" onclick="this.classList.toggle('marcado')"></span> Urgente</label>
+      </td>
+    </tr>
+    <tr><th>Fecha requerida</th><td><input type="text" id="fecha_requerida"></td></tr>
+    <tr><th>Motivo de urgencia (si corresponde)</th><td><input type="text" id="motivo_urgencia"></td></tr>
+  </table>
+
+  <h2>7. Archivos adjuntos</h2>
+  <div class="checkboxes">
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Diseño anterior</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Diseño o referencia nueva</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Logotipos</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Textos definitivos</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Fotografías</label>
+    <label><span class="cb" onclick="this.classList.toggle('marcado')"></span> Otros archivos: <input type="text" id="otros_archivos" style="border-bottom:1px dotted #888;min-width:140px;"></label>
+  </div>
+
+  <h2>8. Observaciones adicionales</h2>
+  <div class="bloque-citas">
+    <textarea id="observaciones" rows="4" placeholder="Escriba aquí sus observaciones..."></textarea>
+  </div>
+
+  <div class="firmas">
+    <div><span>Firma solicitante:</span><input type="text" class="linea" id="firma_solicitante"></div>
+    <div><span>Aclaración:</span><input type="text" class="linea" id="aclaracion"></div>
+    <div><span>Revisado por:</span><input type="text" class="linea" id="revisado_por"></div>
+    <div><span>Fecha:</span><input type="text" class="linea" id="fecha_revision"></div>
+  </div>
+
+</div>
+
+<script>
+// Poner la fecha de hoy automáticamente si el campo está vacío
+window.addEventListener('load', function(){
+  var f = document.getElementById('fecha');
+  if(!f.value){
+    var hoy = new Date();
+    f.value = hoy.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+});
+
+function val(id){
+  var e = document.getElementById(id);
+  return e ? e.value.trim() : '';
+}
+
+function marcadolabel(texto){
+  return texto;
+}
+
+function enviarMail(){
+  var para = val('destinatario');
+  var lineas = [];
+  lineas.push('SOLICITUD DE ETIQUETAS');
+  lineas.push('Solicitud de desarrollo / modificación de etiquetas');
+  lineas.push('----------------------------------------');
+  lineas.push('N° de solicitud: ' + val('n_solicitud'));
+  lineas.push('Fecha: ' + val('fecha'));
+  lineas.push('Solicitado por: ' + val('solicitado_por'));
+  lineas.push('');
+
+  // Tipo de solicitud
+  var tipos = [];
+  document.querySelectorAll('.checkboxes')[0].querySelectorAll('.cb').forEach(function(cb,i){
+    if(cb.classList.contains('marcado')){
+      tipos.push(['Desarrollo nuevo','Modificación','Adaptación','Reimpresión'][i]);
+    }
+  });
+  lineas.push('TIPO DE SOLICITUD: ' + (tipos.length ? tipos.join(', ') : '(sin marcar)'));
+  lineas.push('');
+
+  lineas.push('1. DATOS DEL CLIENTE');
+  lineas.push('  Cliente: ' + val('cliente'));
+  lineas.push('  Contacto: ' + val('contacto'));
+  lineas.push('  Producto: ' + val('producto'));
+  lineas.push('  Nombre de etiqueta: ' + val('nombre_etiqueta'));
+  lineas.push('  Código interno: ' + val('codigo_interno'));
+  lineas.push('');
+
+  lineas.push('2. CARACTERÍSTICAS DE LA ETIQUETA');
+  lineas.push('  Medidas: ' + val('medidas'));
+  lineas.push('  Material: ' + val('material'));
+  lineas.push('  Adhesivo: ' + val('adhesivo'));
+  lineas.push('  Terminación: ' + val('terminacion'));
+  lineas.push('  Troquel: ' + val('troquel'));
+  lineas.push('  Aplicación: ' + val('aplicacion'));
+  lineas.push('');
+
+  lineas.push('3. REQUERIMIENTOS GRÁFICOS');
+  lineas.push('  Cantidad de tintas: ' + val('tintas'));
+  lineas.push('  Colores especiales: ' + val('colores'));
+  lineas.push('  Textos: ' + val('textos'));
+  lineas.push('  Logotipos: ' + val('logotipos'));
+  lineas.push('  Código de barras / QR: ' + val('codigo_barras'));
+  lineas.push('  Información legal: ' + val('info_legal'));
+  lineas.push('  Observaciones de diseño: ' + val('obs_diseno'));
+  lineas.push('');
+
+  lineas.push('4. INFORMACIÓN DE IMPRESIÓN Y PRODUCCIÓN');
+  lineas.push('  Cantidad de etiquetas por rollo: ' + val('cant_rollo'));
+  lineas.push('  Buje: ' + val('buje'));
+  lineas.push('  Sentido de rebobinado: ' + val('rebobinado'));
+  lineas.push('  Otros requerimientos: ' + val('otros_requerimientos'));
+  lineas.push('');
+
+  lineas.push('5. DETALLE DE LA SOLICITUD');
+  lineas.push('  Desarrollo nuevo: ' + (val('detalle_desarrollo') || '(no aplica)'));
+  lineas.push('  Código del trabajo existente: ' + val('cod_existente'));
+  lineas.push('  Versión actual: ' + val('version_actual'));
+  lineas.push('  Cambios solicitados: ' + val('cambios'));
+  lineas.push('  Elementos a mantener: ' + val('mantener'));
+  lineas.push('  Elementos a eliminar: ' + val('eliminar'));
+  lineas.push('');
+
+  // Prioridad
+  var prio = [];
+  document.querySelectorAll('table .cb').forEach(function(cb){
+    var lbl = cb.parentElement.textContent.trim();
+    if(cb.classList.contains('marcado') && (lbl.indexOf('Normal')>-1 || lbl.indexOf('Urgente')>-1)){
+      prio.push(lbl);
+    }
+  });
+  lineas.push('6. PLAZOS Y PRIORIDAD');
+  lineas.push('  Prioridad: ' + (prio.length ? prio.join(', ') : '(sin marcar)'));
+  lineas.push('  Fecha requerida: ' + val('fecha_requerida'));
+  lineas.push('  Motivo de urgencia: ' + val('motivo_urgencia'));
+  lineas.push('');
+
+  // Adjuntos
+  var adj = [];
+  var adjNombres = ['Diseño anterior','Diseño o referencia nueva','Logotipos','Textos definitivos','Fotografías'];
+  var cbsAdj = document.querySelectorAll('.checkboxes')[1].querySelectorAll('.cb');
+  cbsAdj.forEach(function(cb,i){
+    if(cb.classList.contains('marcado')) adj.push(adjNombres[i]);
+  });
+  if(val('otros_archivos')) adj.push('Otros: ' + val('otros_archivos'));
+  lineas.push('7. ARCHIVOS ADJUNTOS: ' + (adj.length ? adj.join(', ') : '(ninguno)'));
+  lineas.push('');
+
+  lineas.push('8. OBSERVACIONES ADICIONALES');
+  lineas.push('  ' + (val('observaciones') || '-'));
+  lineas.push('');
+  lineas.push('Firma solicitante: ' + val('firma_solicitante'));
+  lineas.push('Aclaración: ' + val('aclaracion'));
+  lineas.push('Revisado por: ' + val('revisado_por'));
+  lineas.push('Fecha de revisión: ' + val('fecha_revision'));
+
+  var asunto = 'Solicitud de Etiquetas' + (val('n_solicitud') ? ' - N° ' + val('n_solicitud') : '') + (val('cliente') ? ' - ' + val('cliente') : '');
+  var cuerpo = lineas.join('\n');
+
+  var url = 'mailto:' + encodeURIComponent(para) +
+            '?subject=' + encodeURIComponent(asunto) +
+            '&body=' + encodeURIComponent(cuerpo);
+  window.location.href = url;
+}
+</script>
+
+</body>
+</html>
